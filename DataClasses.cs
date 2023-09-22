@@ -7,4 +7,9 @@ namespace mpg
         public List<string> chartdata = new List<string>();
         public Chart() {}
     }
+
+    enum NamedLineTypes
+    {
+        NoteCount = 0
+    }
 }
