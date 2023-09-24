@@ -54,4 +54,11 @@ namespace mpg
                 return "0000";
         }
     }
+
+    class NamedLinesField
+    {
+        public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+        public List<NamedLine> value = new List<NamedLine>();
+        //public ManiaTemplate mantemp;
+    }
 }
