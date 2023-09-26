@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace mpg;
 class NamedLinesField
@@ -17,11 +18,20 @@ class NamedLinesField
         this.ways.Clear();
         this.value.Add(last);
         PlacementWay way = PlacementWay.StreamStrong;
-        for (int i = 1; i < length; i++)
+        for (int i = 1; i <= length; i++)
         {
             last = this.patt.NextNamedLine(last, out way);
             this.ways.Add(way);
             this.value.Add(last);
         }
+    }
+    public string GetString()
+    {
+        List<string> strlines = new List<string>() {this.initline.DefString("0000", 0)};
+        for (int i = 1; i < this.value.Count-1; i++)
+        {
+            strlines.Add(this.value[i].DefString(strlines.Last(), this.ways[i]));
+        }
+        return string.Join("\n", strlines);
     }
 }
