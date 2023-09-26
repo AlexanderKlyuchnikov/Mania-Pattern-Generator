@@ -32,6 +32,25 @@ namespace mpg
             this.index = index;
         }
 
+        public override bool Equals(object? obj)
+        {
+            if (obj == null)
+                return false;
+            if (!(obj is NamedLine))
+                return false;
+            var ano = (NamedLine)obj;
+            return (this.type == ano.type) && 
+                StringComparer.OrdinalIgnoreCase.Equals(this.value, ano.value) && 
+                StringComparer.OrdinalIgnoreCase.Equals(this.index, ano.index);
+        }
+
+        public override int GetHashCode()
+        {
+            return this.type.GetHashCode() ^
+                StringComparer.OrdinalIgnoreCase.GetHashCode(this.value) ^
+                StringComparer.OrdinalIgnoreCase.GetHashCode(this.index);
+        }
+
         //public static NamedLine emptyline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
 
         public string DefString(string prev)
@@ -63,13 +82,6 @@ namespace mpg
         }
     }
 
-    class NamedLinesField
-    {
-        public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
-        public List<NamedLine> value = new List<NamedLine>();
-        //public ManiaTemplate mantemp;
-    }
-
     class NamedLineWay 
     {
         public NamedLine line = new NamedLine(NamedLineTypes.NoteCount, "0", "");
@@ -83,5 +95,28 @@ namespace mpg
         public NamedLine defaultline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
 
         public Dictionary<NamedLine, NamedLineWay> linedict = new Dictionary<NamedLine, NamedLineWay>();
+        public Pattern() {}
+        public Pattern(NamedLine initline, NamedLine defaultline, Dictionary<NamedLine, NamedLineWay> linedict)
+        {
+            this.initline = initline;
+            this.defaultline = defaultline;
+            this.linedict = linedict;
+        }
+
+        public NamedLine NextNamedLine(NamedLine current)
+        {
+            if (!this.linedict.ContainsKey(current))
+                return this.defaultline;
+            return new NamedLine(0, "4", "");
+        }
+    }
+
+    class NamedLinesField
+    {
+        public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+        public List<NamedLine> value = new List<NamedLine>();
+        public Pattern patt = new Pattern();
+        public NamedLinesField() {}
+        
     }
 }
