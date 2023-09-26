@@ -11,9 +11,10 @@ enum NamedLineTypes
 class NamedLine
 {
     public NamedLineTypes type = NamedLineTypes.NoteCount;
-    public string value = "";
+    public string value = "0";
     public string index = "";
     private Random _rnd = new Random();
+    public NamedLine() {}
     public NamedLine(NamedLineTypes type, string value, string index)
     {
         this.type = type;
@@ -40,7 +41,7 @@ class NamedLine
             StringComparer.OrdinalIgnoreCase.GetHashCode(this.index);
     }
 
-    public string DefString(string prev)
+    public string DefString(string prev, PlacementWay way)
     {
         if (this.type == NamedLineTypes.NoteCount)
         {
