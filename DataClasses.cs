@@ -1,3 +1,4 @@
+using System.IO.Pipes;
 using System;
 using System.Collections.Generic;
 
@@ -14,6 +15,11 @@ namespace mpg
         NoteCount = 0
     }
 
+    enum PlacementWay
+    {
+        StreamStrong = 0
+    }
+
     class NamedLine
     {
         public NamedLineTypes type = NamedLineTypes.NoteCount;
@@ -26,6 +32,9 @@ namespace mpg
             this.value = value;
             this.index = index;
         }
+
+        //public static NamedLine emptyline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+
         public string DefString(string prev)
         {
             if (this.type == NamedLineTypes.NoteCount)
@@ -57,8 +66,23 @@ namespace mpg
 
     class NamedLinesField
     {
-        public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+        //public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
         public List<NamedLine> value = new List<NamedLine>();
         //public ManiaTemplate mantemp;
+    }
+
+    class NamedLineWay 
+    {
+        public NamedLine line = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+        public uint value;
+        public PlacementWay way;
+    }
+
+    class Pattern
+    {
+        public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+        public NamedLine defaultline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
+
+        public Dictionary<NamedLine, NamedLineWay> linedict = new Dictionary<NamedLine, NamedLineWay>();
     }
 }
