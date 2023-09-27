@@ -30,7 +30,7 @@ class NamedLinesField
         List<string> strlines = new List<string>() {this.initline.DefString("0000", 0)};
         for (int i = 1; i < this.value.Count-1; i++)
         {
-            strlines.Add(this.value[i].DefString(strlines.Last(), this.ways[i]));
+            strlines.Add(this.value[i].DefString(strlines.Last(), this.ways[i-1]));
         }
         return string.Join("\n", strlines);
     }
