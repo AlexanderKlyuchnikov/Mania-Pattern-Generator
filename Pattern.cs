@@ -54,8 +54,7 @@ class Pattern
                 {
                     way = posnext[i].way;
                     return posnext[i].line;
-                }
-                    
+                }    
                 point -= posnext[i].value;
             }
             return new NamedLine();

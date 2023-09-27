@@ -5,7 +5,8 @@ namespace mpg;
 
 enum NamedLineTypes
 {
-    NoteCount = 0
+    NoteCount = 0,
+    String = 1
 }
 
 class NamedLine
@@ -107,6 +108,22 @@ class NamedLine
                 }
                 return new string(result);
             }
+        }
+        else if (this.type == NamedLineTypes.String)
+        {
+            if (way == PlacementWay.StreamStrong)
+            {
+                char[] result = new char[4] {'0','0','0','0'};
+                for (int i = 0; i < prev.Length; i++)
+                {
+                    if (prev[i] == '1')
+                        result[i] = '0';
+                    else
+                        result[i] = this.value[i];
+                }
+                return new string(result);
+            }
+            return string.Copy(this.value);
         }
         else
             return "0000";
