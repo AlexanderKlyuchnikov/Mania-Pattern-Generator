@@ -4,7 +4,8 @@ using System.Collections.Generic;
 namespace mpg;
 enum PlacementWay
 {
-    StreamStrong = 0
+    StreamStrong = 0,
+    StreamWeak = 1
 }
 
 class NamedLineWay 

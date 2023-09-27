@@ -51,12 +51,38 @@ class NamedLine
             for (int i = 0; i < 4; i++)
                 if (prev[i] == '0')
                     avpos.Add(i);
+            int counter = val;
             for (int i = 0; i < val; i++)
             {
-                Random rndhelp = new Random(this._rnd.Next() + i);
-                int setpos = rndhelp.Next(0, avpos.Count);
-                result[avpos[setpos]] = '1';
-                avpos.RemoveAt(setpos);
+                if (avpos.Count != 0)
+                {
+                    Random rndhelp = new Random(this._rnd.Next() + i);
+                    int setpos = rndhelp.Next(0, avpos.Count);
+                    result[avpos[setpos]] = '1';
+                    avpos.RemoveAt(setpos);
+                    counter--;
+                }
+                else
+                    break;
+            }
+            if ((counter > 0) && (way == PlacementWay.StreamWeak))
+            {
+                for (int i = 0; i < 4; i++)
+                    if (result[i] == '0')
+                        avpos.Add(i);
+                for (int i = 0; i < avpos.Count; i++)
+                {
+                    if (avpos.Count != 0)
+                    {
+                        Random rndhelp = new Random(this._rnd.Next() + i);
+                        int setpos = rndhelp.Next(0, avpos.Count);
+                        result[avpos[setpos]] = '1';
+                        avpos.RemoveAt(setpos);
+                        counter--;
+                    }
+                    else
+                        break;
+                }
             }
             return new string(result);
         }
