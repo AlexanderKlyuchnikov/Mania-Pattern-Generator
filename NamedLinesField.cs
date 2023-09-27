@@ -20,7 +20,7 @@ class NamedLinesField
         PlacementWay way = PlacementWay.StreamStrong;
         for (int i = 1; i <= length; i++)
         {
-            last = this.patt.NextNamedLine(last, out way);
+            last = this.patt.NextNamedLine(last, ref way);
             this.ways.Add(way);
             this.value.Add(last);
         }

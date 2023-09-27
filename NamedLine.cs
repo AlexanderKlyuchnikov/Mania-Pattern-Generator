@@ -45,32 +45,35 @@ class NamedLine
     {
         if (this.type == NamedLineTypes.NoteCount)
         {
-            int val = int.Parse(this.value);
-            List<int> avpos = new List<int>();
-            char[] result = new char[4] {'0','0','0','0'};
-            for (int i = 0; i < 4; i++)
-                if (prev[i] == '0')
-                    avpos.Add(i);
-            int counter = val;
-            for (int i = 0; i < val; i++)
+            if (way == PlacementWay.Random)
             {
-                if (avpos.Count != 0)
+                int val = int.Parse(this.value);
+                List<int> avpos = new List<int>() {0, 1, 2, 3};
+                char[] result = new char[4] {'0','0','0','0'};
+                for (int i = 0; i < val; i++)
                 {
-                    Random rndhelp = new Random(this._rnd.Next() + i);
-                    int setpos = rndhelp.Next(0, avpos.Count);
-                    result[avpos[setpos]] = '1';
-                    avpos.RemoveAt(setpos);
-                    counter--;
+                    if (avpos.Count != 0)
+                    {
+                        Random rndhelp = new Random(this._rnd.Next() + i);
+                        int setpos = rndhelp.Next(0, avpos.Count);
+                        result[avpos[setpos]] = '1';
+                        avpos.RemoveAt(setpos);
+                    }
+                    else
+                        break;
                 }
-                else
-                    break;
+                return new string(result);
             }
-            if ((counter > 0) && (way == PlacementWay.StreamWeak))
+            else
             {
+                int val = int.Parse(this.value);
+                List<int> avpos = new List<int>();
+                char[] result = new char[4] {'0','0','0','0'};
                 for (int i = 0; i < 4; i++)
-                    if (result[i] == '0')
+                    if (prev[i] == '0')
                         avpos.Add(i);
-                for (int i = 0; i < avpos.Count; i++)
+                int counter = val;
+                for (int i = 0; i < val; i++)
                 {
                     if (avpos.Count != 0)
                     {
@@ -83,8 +86,27 @@ class NamedLine
                     else
                         break;
                 }
+                if ((counter > 0) && (way == PlacementWay.StreamWeak))
+                {
+                    for (int i = 0; i < 4; i++)
+                        if (result[i] == '0')
+                            avpos.Add(i);
+                    for (int i = 0; i < avpos.Count; i++)
+                    {
+                        if (avpos.Count != 0)
+                        {
+                            Random rndhelp = new Random(this._rnd.Next() + i);
+                            int setpos = rndhelp.Next(0, avpos.Count);
+                            result[avpos[setpos]] = '1';
+                            avpos.RemoveAt(setpos);
+                            counter--;
+                        }
+                        else
+                            break;
+                    }
+                }
+                return new string(result);
             }
-            return new string(result);
         }
         else
             return "0000";

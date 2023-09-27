@@ -5,7 +5,8 @@ namespace mpg;
 enum PlacementWay
 {
     StreamStrong = 0,
-    StreamWeak = 1
+    StreamWeak = 1,
+    Random = 2
 }
 
 class NamedLineWay 
@@ -37,7 +38,7 @@ class Pattern
         this.linedict = linedict;
     }
 
-    public NamedLine NextNamedLine(NamedLine current, out PlacementWay way)
+    public NamedLine NextNamedLine(NamedLine current, ref PlacementWay way)
     {
         List<NamedLineWay>? posnext;
         way = PlacementWay.StreamStrong;
