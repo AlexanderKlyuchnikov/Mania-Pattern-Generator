@@ -3,35 +3,46 @@ using System.Collections.Generic;
 using System.Linq;
 
 namespace mpg;
+
+class NamedLineSetup
+{
+    public NamedLine line = new NamedLine();
+    public PlacementWay way = 0;
+    public NamedLineSetup() {}
+    public NamedLineSetup(NamedLine line, PlacementWay way)
+    {
+        this.line = line;
+        this.way = way;
+    }
+    public string DefString(string prev)
+    {
+        return this.line.DefString(prev, this.way);
+    }
+}
+
 class NamedLinesField
 {
     public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
-    public List<NamedLine> value = new List<NamedLine>();
+    public List<NamedLineSetup> value = new List<NamedLineSetup>();
     public Pattern patt = new Pattern();
-    public List<PlacementWay> ways = new List<PlacementWay>() {0};
     public NamedLinesField() {}
     
     public void GenerateValue(int length)
     {
-        NamedLine last = this.initline;
+        NamedLineSetup last = new NamedLineSetup();
         this.value.Clear();
-        this.ways.Clear();
-        this.value.Add(last);
-        PlacementWay way = PlacementWay.StreamStrong;
-        for (int i = 1; i <= length; i++)
+        for (int i = 0; i < length; i++)
         {
-            last = this.patt.NextNamedLine(last, ref way);
-            this.ways.Add(way);
+            last = this.patt.NextNamedLineSetup(last);
             this.value.Add(last);
         }
     }
     public string GetString()
     {
-        List<string> strlines = new List<string>() {this.initline.DefString("0000", 0)};
-        for (int i = 1; i < this.value.Count-1; i++)
-        {
-            strlines.Add(this.value[i].DefString(strlines.Last(), this.ways[i-1]));
-        }
+        List<string> strlines = new List<string>() {"0000"};
+        for (int i = 0; i < this.value.Count; i++)
+            strlines.Add(this.value[i].DefString(strlines.Last()));
+        strlines.RemoveAt(0);
         return string.Join("\n", strlines);
     }
 }
