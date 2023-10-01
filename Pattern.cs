@@ -62,7 +62,7 @@ class Pattern
                     return new NamedLineSetup(posnext[i].line, posnext[i].way);
                 point -= posnext[i].value;
             }
-            return new NamedLineSetup();
+            return new NamedLineSetup(new NamedLine(NamedLineTypes.String, "error get value", ""), PlacementWay.Random);
         }
         return this.defaultline;
     }
