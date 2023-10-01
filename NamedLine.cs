@@ -1,7 +1,12 @@
 using System;
 using System.Collections.Generic;
+using static mpg.ForRandom;
 
 namespace mpg;
+static class ForRandom
+{
+    public static Random rnd = new Random();
+}
 
 enum NamedLineTypes
 {
@@ -14,7 +19,6 @@ class NamedLine
     public NamedLineTypes type = NamedLineTypes.NoteCount;
     public string value = "0";
     public string index = "";
-    private Random _rnd = new Random();
     public NamedLine() {}
     public NamedLine(NamedLineTypes type, string value, string index)
     {
@@ -89,7 +93,7 @@ class NamedLine
             if (avpos.Count == 0)
                 return;
             //Random rndhelp = new Random(this._rnd.Next());
-            int setpos = this._rnd.Next(0, avpos.Count);
+            int setpos = rnd.Next(0, avpos.Count);
             result[avpos[setpos]] = '1';
             avpos.RemoveAt(setpos);
             counter--;
@@ -111,7 +115,7 @@ class NamedLine
         while ((counter != 0) && (avpos.Count != 0))
         {
             //Random rndhelp = new Random(this._rnd.Next());
-            int setpos = this._rnd.Next(0, avpos.Count);
+            int setpos = rnd.Next(0, avpos.Count);
             result[avpos[setpos]] = '1';
             avpos.RemoveAt(setpos);
             counter--;
