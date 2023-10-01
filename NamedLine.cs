@@ -88,10 +88,8 @@ class NamedLine
         for (int i = 0; i < 4; i++)
             if (result[i] == '0')
                 avpos.Add(i);
-        for (int i = 0; i < avpos.Count; i++)
+        while ((counter != 0) && (avpos.Count != 0))
         {
-            if (avpos.Count == 0)
-                return;
             //Random rndhelp = new Random(this._rnd.Next());
             int setpos = rnd.Next(0, avpos.Count);
             result[avpos[setpos]] = '1';
