@@ -106,7 +106,7 @@ class NamedLine
     {
         List<int> avpos = new List<int>(4);
         for (int i = 0; i < 4; i++)
-            if ((prev[i] == '0') && (result[i] == 0))
+            if ((prev[i] == '0') && (result[i] == '0'))
                 avpos.Add(i);
         while ((counter != 0) && (avpos.Count != 0))
         {
