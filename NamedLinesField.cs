@@ -22,7 +22,6 @@ class NamedLineSetup
 
 class NamedLinesField
 {
-    public NamedLine initline = new NamedLine(NamedLineTypes.NoteCount, "0", "");
     public List<NamedLineSetup> value = new List<NamedLineSetup>();
     public Pattern patt = new Pattern();
     public NamedLinesField() {}
