@@ -44,88 +44,86 @@ class NamedLine
 
     public string DefString(string prev, PlacementWay way)
     {
-        if (this.type == NamedLineTypes.NoteCount)
+        char[] result = new char[4] {'0','0','0','0'};
+        int counter;
+        switch ((this.type, way))
         {
-            if (way == PlacementWay.Random)
-            {
-                int val = int.Parse(this.value);
-                List<int> avpos = new List<int>() {0, 1, 2, 3};
-                char[] result = new char[4] {'0','0','0','0'};
-                for (int i = 0; i < val; i++)
-                {
-                    if (avpos.Count != 0)
-                    {
-                        Random rndhelp = new Random(this._rnd.Next() + i);
-                        int setpos = rndhelp.Next(0, avpos.Count);
-                        result[avpos[setpos]] = '1';
-                        avpos.RemoveAt(setpos);
-                    }
-                    else
-                        break;
-                }
-                return new string(result);
-            }
+            case (NamedLineTypes.NoteCount, PlacementWay.Random):
+                counter = int.Parse(this.value);
+                SetNotesByCount(ref counter, ref result);
+                break;
+            case (NamedLineTypes.NoteCount, PlacementWay.StreamStrong):
+                counter = int.Parse(this.value);
+                SetStreamNotesByCount(prev, ref counter, ref result);
+                break;
+            case (NamedLineTypes.NoteCount, PlacementWay.StreamWeak):
+                counter = int.Parse(this.value);
+                SetStreamNotesByCount(prev, ref counter, ref result);
+                if (counter > 0)
+                    SetNotesByCount(ref counter, ref result);
+                break;
+            case (NamedLineTypes.String, PlacementWay.Random):
+                SetNotesByString(prev, ref result);
+                break;
+            case (NamedLineTypes.String, PlacementWay.StreamStrong):
+                SetStreamNotesByString(prev, ref result);
+                break;
+            case (NamedLineTypes.String, PlacementWay.StreamWeak):
+                SetNotesByString(prev, ref result);
+                break;
+            default:
+                result = new char[5] {'e', 'r', 'r', 'o', 'r'};
+                break;
+        }
+        return new string(result);
+    }
+
+    private void SetNotesByCount(ref int counter, ref char[] result)
+    {
+        List<int> avpos = new List<int>(4);
+        for (int i = 0; i < 4; i++)
+            if (result[i] == '0')
+                avpos.Add(i);
+        for (int i = 0; i < avpos.Count; i++)
+        {
+            if (avpos.Count == 0)
+                return;
+            //Random rndhelp = new Random(this._rnd.Next());
+            int setpos = this._rnd.Next(0, avpos.Count);
+            result[avpos[setpos]] = '1';
+            avpos.RemoveAt(setpos);
+            counter--;
+        }
+    }
+
+    private void SetNotesByString(string prev, ref char[] result)
+    {
+        for (int i = 0; i < prev.Length; i++)
+            result[i] = this.value[i];
+    }
+
+    private void SetStreamNotesByCount(string prev, ref int counter, ref char[] result)
+    {
+        List<int> avpos = new List<int>(4);
+        for (int i = 0; i < 4; i++)
+            if ((prev[i] == '0') && (result[i] == 0))
+                avpos.Add(i);
+        while ((counter != 0) && (avpos.Count != 0))
+        {
+            //Random rndhelp = new Random(this._rnd.Next());
+            int setpos = this._rnd.Next(0, avpos.Count);
+            result[avpos[setpos]] = '1';
+            avpos.RemoveAt(setpos);
+            counter--;
+        }
+    }
+
+    private void SetStreamNotesByString(string prev, ref char[] result)
+    {
+        for (int i = 0; i < prev.Length; i++)
+            if (prev[i] == '1')
+                result[i] = '0';
             else
-            {
-                int val = int.Parse(this.value);
-                List<int> avpos = new List<int>();
-                char[] result = new char[4] {'0','0','0','0'};
-                for (int i = 0; i < 4; i++)
-                    if (prev[i] == '0')
-                        avpos.Add(i);
-                int counter = val;
-                for (int i = 0; i < val; i++)
-                {
-                    if (avpos.Count != 0)
-                    {
-                        Random rndhelp = new Random(this._rnd.Next() + i);
-                        int setpos = rndhelp.Next(0, avpos.Count);
-                        result[avpos[setpos]] = '1';
-                        avpos.RemoveAt(setpos);
-                        counter--;
-                    }
-                    else
-                        break;
-                }
-                if ((counter > 0) && (way == PlacementWay.StreamWeak))
-                {
-                    for (int i = 0; i < 4; i++)
-                        if (result[i] == '0')
-                            avpos.Add(i);
-                    for (int i = 0; i < avpos.Count; i++)
-                    {
-                        if (avpos.Count != 0)
-                        {
-                            Random rndhelp = new Random(this._rnd.Next() + i);
-                            int setpos = rndhelp.Next(0, avpos.Count);
-                            result[avpos[setpos]] = '1';
-                            avpos.RemoveAt(setpos);
-                            counter--;
-                        }
-                        else
-                            break;
-                    }
-                }
-                return new string(result);
-            }
-        }
-        else if (this.type == NamedLineTypes.String)
-        {
-            if (way == PlacementWay.StreamStrong)
-            {
-                char[] result = new char[4] {'0','0','0','0'};
-                for (int i = 0; i < prev.Length; i++)
-                {
-                    if (prev[i] == '1')
-                        result[i] = '0';
-                    else
-                        result[i] = this.value[i];
-                }
-                return new string(result);
-            }
-            return string.Copy(this.value);
-        }
-        else
-            return "0000";
+                result[i] = this.value[i];
     }
 }
