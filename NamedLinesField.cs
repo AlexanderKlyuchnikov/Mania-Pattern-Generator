@@ -25,6 +25,11 @@ class NamedLinesField
     public List<NamedLineSetup> value = new List<NamedLineSetup>();
     public Pattern patt = new Pattern();
     public NamedLinesField() {}
+    public NamedLinesField(Pattern pattern)
+    {
+        this.value = new List<NamedLineSetup>();
+        this.patt = pattern;
+    }
     
     public void GenerateValue(int length)
     {
