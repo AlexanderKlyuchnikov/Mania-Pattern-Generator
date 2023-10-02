@@ -69,8 +69,21 @@ class PatternParser
         return result;
     }
 
-    public Dictionary<NamedLine, List<NamedLineOption>> ParsePatternDict(string input)
+    public Dictionary<NamedLine, List<NamedLineOption>> ParsePatternDict(string[] input)
     {
-        return new Dictionary<NamedLine, List<NamedLineOption>>();
+        var result = new Dictionary<NamedLine, List<NamedLineOption>>();
+        int pos;
+        string keystr;
+        string valuestr;
+        //input.IndexOf('=');
+        for (int i = 0; i < input.Length; i++)
+        {
+            pos = input[i].IndexOf('=');
+            keystr = input[i][..pos];
+            pos += 2;
+            valuestr = input[i][pos..];
+            result.Add(ParseNamedLine(keystr), ParseListNamedLineOption(valuestr));
+        }
+        return result;
     }
 }
