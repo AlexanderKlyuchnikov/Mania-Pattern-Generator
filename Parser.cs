@@ -39,7 +39,7 @@ class PatternParser
         NamedLine line = this.ParseNamedLine(nmln);
         int posbeg = input.IndexOf('(') + 1;
         int posend = input.IndexOf(')');
-        int value = int.Parse(input.Substring(posbeg, posend - posbeg));
+        int value = int.Parse(input[posbeg..posend]);
         PlacementWay way = PlacementWay.Random;
         posbeg = input.IndexOf('[') + 1;
         posend = input.IndexOf(']');
@@ -57,6 +57,27 @@ class PatternParser
                 break;
         }
         return new NamedLineOption(line, value, way);
+    }
+
+    public NamedLineSetup ParseNamedLineSetup(string input)
+    {
+        int pos = input.IndexOf('[') + 1;
+        int pos2 = input.IndexOf(']');
+        PlacementWay way = 0;
+        string waystr = input[pos..pos2];
+        switch (waystr)
+        {
+            case "StreamStrong":
+                way = PlacementWay.StreamStrong;
+                break;
+            case "StreamWeak":
+                way = PlacementWay.StreamWeak;
+                break;
+            case "Random":
+                way = PlacementWay.Random;
+                break;
+        }
+        return new NamedLineSetup(ParseNamedLine(input[..(pos-1)]), way);
     }
 
     public List<NamedLineOption> ParseListNamedLineOption(string input)
@@ -85,5 +106,37 @@ class PatternParser
             result.Add(ParseNamedLine(keystr), ParseListNamedLineOption(valuestr));
         }
         return result;
+    }
+
+    public Pattern ParsePattern(string[] input)
+    {
+        string str;
+        int pos;
+        NamedLine init = new NamedLine();
+        NamedLineSetup defline = new NamedLineSetup();
+        var linedict = new Dictionary<NamedLine, List<NamedLineOption>>();
+
+        for (int i = 0; i < input.Length; i++)
+        {
+            str = input[i];
+            if (string.Equals(str, "start"))
+            {
+                linedict = ParsePatternDict(input[(i+1)..]);
+                break;
+            }
+            pos = str.IndexOf('=');
+            switch (input[i][..pos])
+            {
+                case "init":
+                    init = ParseNamedLine(input[i][(pos+1)..]);
+                    break;
+                case "default":
+                defline = ParseNamedLineSetup(input[i][(pos+1)..]);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return new Pattern(init, defline, linedict);
     }
 }
