@@ -61,8 +61,13 @@ class PatternParser
 
     public List<NamedLineOption> ParseListNamedLineOption(string input)
     {
-        return new List<NamedLineOption>();
-            }
+        List<NamedLineOption> result = new List<NamedLineOption>();
+        foreach (string item in input.Split(','))
+        {
+            result.Add(this.ParseNamedLineOption(item));
+        }
+        return result;
+    }
 
     public Dictionary<NamedLine, List<NamedLineOption>> ParsePatternDict(string input)
     {
