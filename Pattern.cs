@@ -2,26 +2,6 @@ using System;
 using System.Collections.Generic;
 
 namespace mpg;
-enum PlacementWay
-{
-    StreamStrong = 0,
-    StreamWeak = 1,
-    Random = 2
-}
-
-class NamedLineOption 
-{
-    public NamedLine line = new NamedLine(NamedLineTypes.NoteCount, "0", "");
-    public int value;
-    public PlacementWay way;
-
-    public NamedLineOption(NamedLine line, int value, PlacementWay way)
-    {
-        this.line = line;
-        this.value = value;
-        this.way = way;
-    }
-}
 
 class Pattern
 {

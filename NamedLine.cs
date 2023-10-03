@@ -3,16 +3,6 @@ using System.Collections.Generic;
 using static mpg.ForRandom;
 
 namespace mpg;
-static class ForRandom
-{
-    public static Random rnd = new Random();
-}
-
-enum NamedLineTypes
-{
-    NoteCount = 0,
-    String = 1
-}
 
 class NamedLine
 {

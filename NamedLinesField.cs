@@ -4,22 +4,6 @@ using System.Linq;
 
 namespace mpg;
 
-class NamedLineSetup
-{
-    public NamedLine line = new NamedLine();
-    public PlacementWay way = 0;
-    public NamedLineSetup() {}
-    public NamedLineSetup(NamedLine line, PlacementWay way)
-    {
-        this.line = line;
-        this.way = way;
-    }
-    public string DefString(string prev)
-    {
-        return this.line.DefString(prev, this.way);
-    }
-}
-
 class NamedLinesField
 {
     public List<NamedLineSetup> value = new List<NamedLineSetup>();
