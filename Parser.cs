@@ -105,7 +105,7 @@ class PatternParser
     public PlacementWay ParsePlacementWay(string input)
     {
         if (input.Length == 0)
-            return PlacementWay.Random;
+            return this.defaultPlacementWay;
         return input switch
         {
             "StreamStrong" => PlacementWay.StreamStrong,
@@ -217,9 +217,7 @@ class PatternParser
         int begpos = input.IndexOf('#');
         if (begpos == -1)
             throw new ParseException("Parse error: not found any section");
-        int endpos = 0;
-        var init = new NamedLine();
-        var defline = new NamedLineSetup();
+        int endpos;
         var linedict = new Dictionary<NamedLine, List<NamedLineOption>>();
 
         try
@@ -249,6 +247,6 @@ class PatternParser
             throw new ParseException("Parse error: " + e.Message);
         }
         
-        return new Pattern(this.initline, defline, linedict);
+        return new Pattern(this.initline, linedict);
     }
 }

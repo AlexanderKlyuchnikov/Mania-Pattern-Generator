@@ -6,8 +6,6 @@ namespace mpg;
 class Pattern
 {
     public NamedLine initline = new NamedLine();
-    public NamedLineSetup defaultline = new NamedLineSetup(new NamedLine(), PlacementWay.StreamStrong);
-
     public Dictionary<NamedLine, List<NamedLineOption>> linedict = new Dictionary<NamedLine, List<NamedLineOption>>();
     private Random _rnd = new Random();
     public Pattern() 
@@ -17,10 +15,9 @@ class Pattern
                 new List<NamedLineOption>() 
                     {new NamedLineOption(this.initline, 1, PlacementWay.StreamStrong)});
     }
-    public Pattern(NamedLine initline, NamedLineSetup defaultline, Dictionary<NamedLine, List<NamedLineOption>> linedict)
+    public Pattern(NamedLine initline, Dictionary<NamedLine, List<NamedLineOption>> linedict)
     {
         this.initline = initline;
-        this.defaultline = defaultline;
         this.linedict = linedict;
         this.linedict.Add(new NamedLine(), 
                         new List<NamedLineOption>() 
@@ -44,6 +41,7 @@ class Pattern
             }
             return new NamedLineSetup(new NamedLine(NamedLineTypes.String, "error get value", ""), PlacementWay.Random);
         }
-        return this.defaultline;
+        throw new GenerateException("Generate error: Not found transition for NamedLine: " 
+            + "type = " + current.line.type + ", value = " + current.line.value + ", index =" + current.line.index);
     }
 }

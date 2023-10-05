@@ -3,9 +3,6 @@ using System;
 namespace mpg;
 
 class MPGException : Exception
-{ }
-
-class ParseException : MPGException
 {
     private string? _message;
     new public string? Message 
@@ -13,18 +10,38 @@ class ParseException : MPGException
         {return _message;}
      set 
         {_message = value;}}
-
-    public ParseException()
+    
+    public MPGException()
     {
         this.Message = "";
     }
+
+    public MPGException(string? mes)
+    {
+        this.Message = mes;
+    }
+    
+    public override string ToString()
+    {
+        return "MPGen exception: " + Message; 
+    }
+}
+
+class ParseException : MPGException
+{
+    public ParseException() { }
 
     public ParseException(string? mes)
     {
         this.Message = mes;
     }
-    public override string ToString()
+}
+
+class GenerateException : MPGException
+{
+    public GenerateException() {}
+    public GenerateException(string? mes)
     {
-        return "MPGen exception: " + Message; 
+        this.Message = mes;
     }
 }
