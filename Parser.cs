@@ -183,7 +183,7 @@ class PatternParser
                 case "init":
                     this.initline = this.ParseNamedLine(this.CropSpaces(trans[i][(pos+1)..]));
                     break;
-                case "default placement way":
+                case "default_placement_way":
                     this.defaultPlacementWay = this.ParsePlacementWay(this.CropSpaces(trans[i][(pos+1)..]));
                     break;
                 default:
