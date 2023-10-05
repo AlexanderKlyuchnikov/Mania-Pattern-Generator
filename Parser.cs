@@ -29,7 +29,7 @@ class PatternParser
             endpos = i;
             break;
         }
-        Console.WriteLine(str[begpos..(endpos+1)]);
+        //Console.WriteLine(str[begpos..(endpos+1)]);
         return str[begpos..(endpos+1)];
     }
     
@@ -101,7 +101,7 @@ class PatternParser
             value = args[0];
         }
             
-        string index = args[1];
+        string index = this.CropSpaces(args[1]);
 
         return new NamedLine(type, value, index);
     }
