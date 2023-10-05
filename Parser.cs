@@ -14,6 +14,8 @@ class PatternParser
         string index;
 
         string[] inputarr = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (inputarr.Length == 0)
+            throw new ParseException("Empty NamedLine string");
         if (inputarr.Length == 1)
             index = "";
         else
@@ -35,27 +37,27 @@ class PatternParser
     public NamedLineOption ParseNamedLineOption(string input)
     {
         int delpos = input.IndexOfAny(new char[]{'(', '[', '{'});
+
         string nmln = input[..delpos];
         NamedLine line = this.ParseNamedLine(nmln);
+
         int posbeg = input.IndexOf('(') + 1;
         int posend = input.IndexOf(')');
-        int value = int.Parse(input[posbeg..posend]);
+        int value = -1;
+        if (!int.TryParse(input[posbeg..posend], out value))
+            throw new ParseException("Not int option value");
+            
         PlacementWay way = PlacementWay.Random;
         posbeg = input.IndexOf('[') + 1;
         posend = input.IndexOf(']');
-        string waystr = input.Substring(posbeg, posend - posbeg);
-        switch (waystr)
+        string waystr = input[posbeg..posend];
+        way = waystr switch
         {
-            case "StreamStrong":
-                way = PlacementWay.StreamStrong;
-                break;
-            case "StreamWeak":
-                way = PlacementWay.StreamWeak;
-                break;
-            case "Random":
-                way = PlacementWay.Random;
-                break;
-        }
+            "StreamStrong" => PlacementWay.StreamStrong,
+            "StreamWeak" => PlacementWay.StreamWeak,
+            "Random" => PlacementWay.Random,
+            _ => throw new ParseException("Unknown option placement way"),
+        };
         return new NamedLineOption(line, value, way);
     }
 
@@ -65,28 +67,33 @@ class PatternParser
         int pos2 = input.IndexOf(']');
         PlacementWay way = 0;
         string waystr = input[pos..pos2];
-        switch (waystr)
+        way = waystr switch
         {
-            case "StreamStrong":
-                way = PlacementWay.StreamStrong;
-                break;
-            case "StreamWeak":
-                way = PlacementWay.StreamWeak;
-                break;
-            case "Random":
-                way = PlacementWay.Random;
-                break;
-        }
+            "StreamStrong" => PlacementWay.StreamStrong,
+            "StreamWeak" => PlacementWay.StreamWeak,
+            "Random" => PlacementWay.Random,
+            _ => throw new ParseException("Unknown setup placement way"),
+        };
         return new NamedLineSetup(ParseNamedLine(input[..(pos-1)]), way);
     }
 
     public List<NamedLineOption> ParseListNamedLineOption(string input)
     {
         List<NamedLineOption> result = new List<NamedLineOption>();
-        foreach (string item in input.Split(','))
+        string[] arr = input.Split(',');
+        for (int i = 0; i < arr.Length; i++)
         {
-            result.Add(this.ParseNamedLineOption(item));
+            try
+            {
+                result.Add(this.ParseNamedLineOption(arr[i]));
+            }
+            catch (ParseException e)
+            {
+                string message = "Invalid " + (i + 1).ToString() + " option: " + e.Message;
+                throw new ParseException(message);
+            }
         }
+
         return result;
     }
 
@@ -96,14 +103,21 @@ class PatternParser
         int pos;
         string keystr;
         string valuestr;
-        //input.IndexOf('=');
         for (int i = 0; i < input.Length; i++)
         {
             pos = input[i].IndexOf('=');
             keystr = input[i][..pos];
             pos += 2;
             valuestr = input[i][pos..];
-            result.Add(ParseNamedLine(keystr), ParseListNamedLineOption(valuestr));
+            try
+            {
+                result.Add(ParseNamedLine(keystr), ParseListNamedLineOption(valuestr));
+            }
+            catch (ParseException e)
+            {
+                string message = "Invalid " + (i + 1).ToString() + " transition: " + e.Message;
+                throw new ParseException(message);
+            }
         }
         return result;
     }
@@ -112,30 +126,45 @@ class PatternParser
     {
         string str;
         int pos;
-        NamedLine init = new NamedLine();
-        NamedLineSetup defline = new NamedLineSetup();
+        var init = new NamedLine();
+        var defline = new NamedLineSetup();
         var linedict = new Dictionary<NamedLine, List<NamedLineOption>>();
-
-        for (int i = 0; i < input.Length; i++)
+        try
         {
-            str = input[i];
-            if (string.Equals(str, "start"))
+            for (int i = 0; i < input.Length; i++)
             {
-                linedict = ParsePatternDict(input[(i+1)..]);
-                break;
+                str = input[i];
+                if (string.Equals(str, "start"))
+                {
+                    linedict = ParsePatternDict(input[(i+1)..]);
+                    break;
+                }
+                pos = str.IndexOf('=');
+                if (pos == -1)
+                {
+                    string message = "Not found \"=\" in " + (i + 1).ToString() + " line";
+                    throw new ParseException(message);
+                }
+                switch (input[i][..pos])
+                {
+                    case "init":
+                        init = ParseNamedLine(input[i][(pos+1)..]);
+                        break;
+                    case "default":
+                        defline = ParseNamedLineSetup(input[i][(pos+1)..]);
+                        break;
+                    default:
+                        string message = "Unknown key in" + (i + 1).ToString() + "operator";
+                        throw new ParseException(message);
+                }
             }
-            pos = str.IndexOf('=');
-            switch (input[i][..pos])
-            {
-                case "init":
-                    init = ParseNamedLine(input[i][(pos+1)..]);
-                    break;
-                case "default":
-                defline = ParseNamedLineSetup(input[i][(pos+1)..]);
-                    break;
-                default:
-                    break;
-            }
+            if (linedict.Count == 0)
+                throw new ParseException("Not found start label");
+        }
+        catch (ParseException e)
+        {
+            string message = "Parse error: " + e.Message;
+            throw new ParseException(message);
         }
         return new Pattern(init, defline, linedict);
     }
