@@ -13,6 +13,12 @@ class ParseException : MPGException
         {return _message;}
      set 
         {_message = value;}}
+
+    public ParseException()
+    {
+        this.Message = "";
+    }
+
     public ParseException(string? mes)
     {
         this.Message = mes;
