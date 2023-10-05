@@ -9,6 +9,29 @@ class PatternParser
     public PlacementWay defaultPlacementWay = PlacementWay.Random;
     public PatternParser() {}
 
+    public string CropSpaces(string str)
+    {
+        int begpos = -1;
+        int endpos = 0;
+        for (int i = 0; i < str.Length; i++)
+        {
+            if ((str[i] == ' ') || (str[i] == '\n'))
+                continue;
+            begpos = i;
+            break;
+        }
+        if (begpos == -1)
+            return "";
+        for (int i = str.Length - 1; i > -1; i--)
+        {
+            if ((str[i] == ' ') || (str[i] == '\n'))
+                continue;
+            endpos = i;
+            break;
+        }
+        return str[begpos..(endpos+1)];
+    }
+    
     public string[] SplitAttributes(string str)
     {
         List<string> result = new();
