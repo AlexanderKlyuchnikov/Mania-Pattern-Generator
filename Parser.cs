@@ -29,6 +29,7 @@ class PatternParser
             endpos = i;
             break;
         }
+        Console.WriteLine(str[begpos..(endpos+1)]);
         return str[begpos..(endpos+1)];
     }
     
@@ -129,7 +130,7 @@ class PatternParser
     {
         if (input.Length == 0)
             return this.defaultPlacementWay;
-        return input switch
+        return this.CropSpaces(input) switch
         {
             "StreamStrong" => PlacementWay.StreamStrong,
             "StreamWeak" => PlacementWay.StreamWeak,
@@ -190,14 +191,14 @@ class PatternParser
             pos = trans[i].IndexOf('=');
             if (pos == -1)
                 continue;
-            str = trans[i][1..pos];
+            str = this.CropSpaces(trans[i][1..pos]);
             switch (str)
             {
-                case "\ninit ":
+                case "init":
                     this.initline = this.ParseNamedLine(trans[i][(pos+1)..]);
                     break;
-                case "\ndefault placement way ":
-                    this.defaultPlacementWay = this.ParsePlacementWay(trans[i][(pos+2)..]);
+                case "default placement way":
+                    this.defaultPlacementWay = this.ParsePlacementWay(trans[i][(pos+1)..]);
                     break;
                 default:
                     throw new ParseException("Unknown setting: " + str);
