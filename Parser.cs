@@ -6,6 +6,7 @@ namespace mpg;
 class PatternParser
 {
     public NamedLine initline = new();
+    public PlacementWay defaultPlacementWay = PlacementWay.Random;
     public PatternParser() {}
 
     public string[] SplitAttributes(string str)
@@ -159,18 +160,21 @@ class PatternParser
     public void ParseSettings(string input)
     {
         int pos;
-        string str;
+        string str = "54545";
         string[] trans = input.Split(';');
         for (int i = 0; i < trans.Length; i++)
         {
             pos = trans[i].IndexOf('=');
             if (pos == -1)
                 continue;
-            str = trans[i][..pos];
+            str = trans[i][1..pos];
             switch (str)
             {
-                case "\ninit":
+                case "\ninit ":
                     this.initline = this.ParseNamedLine(trans[i][(pos+1)..]);
+                    break;
+                case "\ndefault placement way ":
+                    this.defaultPlacementWay = this.ParsePlacementWay(trans[i][(pos+2)..]);
                     break;
                 default:
                     throw new ParseException("Unknown setting: " + str);
@@ -230,10 +234,10 @@ class PatternParser
                 switch (section)
                 {
                     case "#settings":
-                        this.ParseSettings(input[(endpos + 1)..begpos]);
+                        this.ParseSettings(input[endpos..begpos]);
                         break;
                     case "#start":
-                        linedict = this.ParsePatternDict(input[(endpos + 1)..begpos]);
+                        linedict = this.ParsePatternDict(input[endpos..begpos]);
                         break;
                     default:
                         throw new ParseException("Unknown section: " + section);
