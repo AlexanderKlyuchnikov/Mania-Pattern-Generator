@@ -6,9 +6,9 @@ class NamedLineOption
 {
     public NamedLine line = new NamedLine(NamedLineTypes.NoteCount, "0", "");
     public int value;
-    public PlacementWay way;
+    public APlacementWay way;
 
-    public NamedLineOption(NamedLine line, int value, PlacementWay way)
+    public NamedLineOption(NamedLine line, int value, APlacementWay way)
     {
         this.line = line;
         this.value = value;
@@ -19,16 +19,12 @@ class NamedLineOption
 class NamedLineSetup
 {
     public NamedLine line = new NamedLine();
-    public PlacementWay way = 0;
+    public APlacementWay way = new StreamWay();
     public NamedLineSetup() {}
-    public NamedLineSetup(NamedLine line, PlacementWay way)
+    public NamedLineSetup(NamedLine line, APlacementWay way)
     {
         this.line = line;
         this.way = way;
-    }
-    public string DefString(string prev)
-    {
-        return this.line.DefString(prev, this.way);
     }
 }
 

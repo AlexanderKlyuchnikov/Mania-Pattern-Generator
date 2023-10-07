@@ -7,7 +7,7 @@ namespace mpg;
 class PatternParser
 {
     public NamedLine initline = new();
-    public PlacementWay defaultPlacementWay = PlacementWay.Random;
+    public APlacementWay defaultPlacementWay = new StreamWay();
     public PatternParser() {}
 
     public string CropSpaces(string str)
@@ -115,15 +115,15 @@ class PatternParser
         return result;
     }
 
-    public PlacementWay ParsePlacementWay(string input)
+    public APlacementWay ParsePlacementWay(string input)
     {
         if (input.Length == 0)
             return this.defaultPlacementWay;
         return input switch
         {
-            "StreamStrong" => PlacementWay.StreamStrong,
-            "StreamWeak" => PlacementWay.StreamWeak,
-            "Random" => PlacementWay.Random,
+            "StreamStrong" => new StreamWay(WayType.Strong, 2, 0),
+            "StreamWeak" => new StreamWay(WayType.Weak, 1, 0),
+            //"Random" => PlacementWay.Random,
             _ => throw new ParseException("Unknown option placement way: " + input),
         }; 
     }
@@ -141,7 +141,7 @@ class PatternParser
 
         NamedLine line = this.ParseNamedLine(this.CropSpaces(args[0]));
         int value = this.ParseValue(this.CropSpaces(args[1]));
-        PlacementWay way = this.ParsePlacementWay(this.CropSpaces(args[2]));
+        APlacementWay way = this.ParsePlacementWay(this.CropSpaces(args[2]));
 
         return new NamedLineOption(line, value, way);
     }
