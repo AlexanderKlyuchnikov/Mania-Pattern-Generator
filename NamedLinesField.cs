@@ -25,11 +25,17 @@ class NamedLinesField
             this.value.Add(last);
         }
     }
+
+    public void AddString(List<string> strlines, int number)
+    {
+        strlines.Add(this.value[number].DefString(strlines.Last()));
+    }
+
     public string GetString()
     {
-        List<string> strlines = new List<string>() {"0000"};
+        List<string> strlines = new() {"0000"};
         for (int i = 0; i < this.value.Count; i++)
-            strlines.Add(this.value[i].DefString(strlines.Last()));
+            this.AddString(strlines, i);
         strlines.RemoveAt(0);
         return string.Join("\n", strlines);
     }
