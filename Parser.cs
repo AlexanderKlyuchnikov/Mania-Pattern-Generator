@@ -26,10 +26,11 @@ class PatternParser
             return "";
         for (int i = str.Length - 1; i > -1; i--)
         {
-            if ((str[i] == ' ') || (str[i] == '\n'))
-                continue;
-            endpos = i;
-            break;
+            if (!((str[i] == ' ') || (((byte)str[i]) == 13) || (((byte)str[i]) == 10)))
+            {
+                endpos = i;
+                break;
+            }
         }
         return str[begpos..(endpos+1)];
     }
@@ -234,9 +235,9 @@ class PatternParser
         {
             while (begpos != input.Length)
             {
-                endpos = input.IndexOfAny(" \n".ToCharArray(), begpos) - 1;
-                section = input[begpos..endpos];
-                begpos = input.IndexOf('#', endpos + 1);
+                endpos = input.IndexOfAny(" \n".ToCharArray(), begpos);
+                section = this.CropSpaces(input[begpos..endpos]);
+                begpos = input.IndexOf('#', endpos);
                 if (begpos == -1)
                     begpos = input.Length;
                 switch (section)
