@@ -89,7 +89,7 @@ class PatternParser
         NamedLineTypes type;
         string value = this.CropSpaces(args[0]);
         if (value.Length == 0)
-            throw new ParseException("NamedLine value is empty");
+            throw new ParseException("NamedLine value (first argument) is empty");
         if ((value[0] == '\"') && (value.Last() == '\"') && (value.Length != 1))
         {
             type = NamedLineTypes.String;
@@ -119,13 +119,21 @@ class PatternParser
     {
         if (input.Length == 0)
             return this.defaultPlacementWay;
-        return input switch
+
+        int pos = input.IndexOf('(');
+        if ((input.Last() != ')') || (pos == -1))
+            throw new ParseException("PlacementWay should contain arguments in \"(...)\"");
+        string wayname = input[..pos];
+        string wayargs = input[(pos+1)..(input.Length - 1)];
+
+        APlacementWay result = wayname switch
         {
-            "StreamStrong" => new StreamWay(WayType.Strong, 2, 0),
-            "StreamWeak" => new StreamWay(WayType.Weak, 1, 0),
-            //"Random" => PlacementWay.Random,
-            _ => throw new ParseException("Unknown option placement way: " + input),
-        }; 
+            "Stream" => new StreamWay(),
+            _ => throw new ParseException("Unknown option placement way: " + wayname),
+        };
+        result.Fill(this.SplitAttributes(wayargs));
+
+        return result;
     }
 
     public NamedLineOption ParseNamedLineOption(string input)

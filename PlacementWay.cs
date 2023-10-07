@@ -13,9 +13,9 @@ enum WayType
 abstract class APlacementWay
 {
     public WayType type = WayType.Strong;
-    public abstract void Fill(params string[] args);
+    public abstract void Fill(string[] args);
     public abstract List<int> GetPositions(List<string> strlines);
-    public abstract override string ToString();
+    //public abstract override string ToString();
 }
 
 class StreamWay : APlacementWay
@@ -29,9 +29,42 @@ class StreamWay : APlacementWay
         this.distance = distance;
         this.offset = offset;
     }
-    public override void Fill(params string[] str)
+    public override void Fill(string[] str)
     {
-
+        if (str.Length != 3)
+            throw new ParseException("Wrong number of StreamWay arguments: " + str.Length.ToString() + " instead of 3");
+        
+        if (str[0].Length == 0)
+            this.type = WayType.Strong;
+        else
+            this.type = str[0] switch
+            {
+                "Strong" => WayType.Strong,
+                "Weak" => WayType.Weak,
+                _ => throw new ParseException("Unknown StreamWay type (first argument): " + str[0]),
+            };
+        
+        if (str[1].Length == 0)
+            this.distance = 1;
+        else
+            if (int.TryParse(str[1], out int dist))
+                if (dist > 0)
+                    this.distance = dist;
+                else
+                    throw new ParseException("Not positive distance (second argument) for StreamWay: " + dist.ToString());
+            else
+                throw new ParseException("Not integer argument for StreamWay distance (second argument): " + str[1]);
+        
+        if (str[2].Length == 0)
+            this.offset = 0;
+        else
+            if (int.TryParse(str[2], out int offs))
+                if (offs >= 0)
+                    this.offset = offs;
+                else
+                    throw new ParseException("Negative offset (third argument) for StreamWay: " + offs.ToString());
+            else
+                throw new ParseException("Not integer argument for StreamWay offset (third argument): " + str[2]);
     }
     public override List<int> GetPositions(List<string> strlines)
     {
