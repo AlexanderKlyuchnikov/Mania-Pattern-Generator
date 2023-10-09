@@ -167,3 +167,40 @@ class JackWay : APlacementWay
         return result;
     }
 }
+
+class SetWay : APlacementWay
+{
+    public List<int>? avpos = null;
+    public SetWay() {}
+    public override void Fill(string[] args)
+    {
+        if (args.Length != 2)
+            throw new ParseException("Wrong number of SetWay arguments: " + args.Length.ToString() + " instead of 2");
+        if (args[0].Length == 0)
+            this.type = WayType.Strong;
+        else
+            type = args[0] switch
+            {
+                "Strong" => WayType.Strong,
+                "Weak" => WayType.Weak,
+                _ => throw new ParseException("Unknown SetWay type (first argument): " + args[0]),
+            };
+        if ((args[1].First() != '{') || (args[1].Last() != '}'))
+            throw new ParseException("Second argument in SetWay should be in \"{...}\": " + args[1]);
+        string[] lst = PatternParser.SplitAttributes(args[1][1..(args[1].Length - 1)]);
+        this.avpos = new List<int>();
+        foreach (var item in lst)
+        {
+            if (int.TryParse(item, out int pos))
+                this.avpos.Add(pos - 1);
+            else
+                throw new ParseException("Not integer argument for Setway positions (argument in 2nd argument): " + item);
+        }
+    }
+    public override List<int> GetPositions(List<string> strlines)
+    {
+        if (this.avpos is null)
+            return new List<int>(4){0, 1, 2, 3};
+        return new List<int>(this.avpos);
+    }
+}

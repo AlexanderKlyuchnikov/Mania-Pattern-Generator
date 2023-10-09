@@ -10,7 +10,7 @@ class PatternParser
     public APlacementWay defaultPlacementWay = new StreamWay();
     public PatternParser() {}
 
-    public string CropSpaces(string str)
+    public static string CropSpaces(string str)
     {
         int begpos = -1;
         int endpos = 0;
@@ -35,7 +35,7 @@ class PatternParser
         return str[begpos..(endpos+1)];
     }
     
-    public string[] SplitAttributes(string str)
+    public static string[] SplitAttributes(string str)
     {
         List<string> result = new();
         int count1 = 0, count2 = 0, count3 = 0;
@@ -58,7 +58,7 @@ class PatternParser
                     count3++;
                     break;
                 case '}':
-                    count1--;
+                    count3--;
                     break;
                 case ',':
                     if ((count1 == 0) && (count2 == 0) && (count3 == 0))
@@ -82,12 +82,12 @@ class PatternParser
         if (input.Last() != ']')
             throw new ParseException("Last character in NamedLine definition is not \"]\"");
         
-        string[] args = this.SplitAttributes(input[1..(input.Length - 1)]);
+        string[] args = PatternParser.SplitAttributes(input[1..(input.Length - 1)]);
         if (args.Length != 2)
             throw new ParseException("Wrong number of NamedLine arguments: " + args.Length.ToString() + " instead of 2");
 
         NamedLineTypes type;
-        string value = this.CropSpaces(args[0]);
+        string value = PatternParser.CropSpaces(args[0]);
         if (value.Length == 0)
             throw new ParseException("NamedLine value (first argument) is empty");
         if ((value[0] == '\"') && (value.Last() == '\"') && (value.Length != 1))
@@ -100,7 +100,7 @@ class PatternParser
             type = NamedLineTypes.NoteCount;
         }
          
-        string index = this.CropSpaces(args[1]);
+        string index = PatternParser.CropSpaces(args[1]);
         return new NamedLine(type, value, index);
     }
 
@@ -130,9 +130,10 @@ class PatternParser
         {
             "Stream" => new StreamWay(),
             "Jack" => new JackWay(),
+            "Set" => new SetWay(),
             _ => throw new ParseException("Unknown option placement way: " + wayname),
         };
-        result.Fill(this.SplitAttributes(wayargs).Select(x => this.CropSpaces(x)).ToArray<string>());
+        result.Fill(PatternParser.SplitAttributes(wayargs).Select(x => PatternParser.CropSpaces(x)).ToArray<string>());
 
         return result;
     }
@@ -144,13 +145,13 @@ class PatternParser
         if (input.Last() != ')')
             throw new ParseException("Last character in NamedLine option is not \")\"");
         
-        string[] args = this.SplitAttributes(input[1..(input.Length - 1)]);
+        string[] args = PatternParser.SplitAttributes(input[1..(input.Length - 1)]);
         if (args.Length != 3)
             throw new ParseException("Wrong number of option arguments: " + args.Length.ToString() + " instead of 3");
 
-        NamedLine line = this.ParseNamedLine(this.CropSpaces(args[0]));
-        int value = this.ParseValue(this.CropSpaces(args[1]));
-        APlacementWay way = this.ParsePlacementWay(this.CropSpaces(args[2]));
+        NamedLine line = this.ParseNamedLine(PatternParser.CropSpaces(args[0]));
+        int value = this.ParseValue(PatternParser.CropSpaces(args[1]));
+        APlacementWay way = this.ParsePlacementWay(PatternParser.CropSpaces(args[2]));
 
         return new NamedLineOption(line, value, way);
     }
@@ -158,14 +159,14 @@ class PatternParser
     public List<NamedLineOption> ParseListNamedLineOption(string input)
     {
         List<NamedLineOption> result = new();
-        string[] arr = this.SplitAttributes(input);
+        string[] arr = PatternParser.SplitAttributes(input);
         if (arr.Length == 0)
             throw new ParseException("Empty list of next line options");
         for (int i = 0; i < arr.Length; i++)
         {
             try
             {
-                result.Add(this.ParseNamedLineOption(this.CropSpaces(arr[i])));
+                result.Add(this.ParseNamedLineOption(PatternParser.CropSpaces(arr[i])));
             }
             catch (ParseException e)
             {
@@ -187,14 +188,14 @@ class PatternParser
             pos = trans[i].IndexOf('=');
             if (pos == -1)
                 continue;
-            str = this.CropSpaces(trans[i][0..pos]);
+            str = PatternParser.CropSpaces(trans[i][0..pos]);
             switch (str)
             {
                 case "init":
-                    this.initline = this.ParseNamedLine(this.CropSpaces(trans[i][(pos+1)..]));
+                    this.initline = this.ParseNamedLine(PatternParser.CropSpaces(trans[i][(pos+1)..]));
                     break;
                 case "default_placement_way":
-                    this.defaultPlacementWay = this.ParsePlacementWay(this.CropSpaces(trans[i][(pos+1)..]));
+                    this.defaultPlacementWay = this.ParsePlacementWay(PatternParser.CropSpaces(trans[i][(pos+1)..]));
                     break;
                 default:
                     throw new ParseException("Unknown setting: " + str);
@@ -216,7 +217,7 @@ class PatternParser
             pos = trans[i].IndexOf('=');
             if (pos == -1)
                 continue;
-            keystr = this.CropSpaces(trans[i][..pos]);
+            keystr = PatternParser.CropSpaces(trans[i][..pos]);
             valuestr = trans[i][(pos+1)..];
             try
             {
@@ -245,7 +246,7 @@ class PatternParser
             while (begpos != input.Length)
             {
                 endpos = input.IndexOfAny(" \n".ToCharArray(), begpos);
-                section = this.CropSpaces(input[begpos..endpos]);
+                section = PatternParser.CropSpaces(input[begpos..endpos]);
                 begpos = input.IndexOf('#', endpos);
                 if (begpos == -1)
                     begpos = input.Length;
