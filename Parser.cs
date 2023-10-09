@@ -129,6 +129,7 @@ class PatternParser
         APlacementWay result = wayname switch
         {
             "Stream" => new StreamWay(),
+            "Jack" => new JackWay(),
             _ => throw new ParseException("Unknown option placement way: " + wayname),
         };
         result.Fill(this.SplitAttributes(wayargs).Select(x => this.CropSpaces(x)).ToArray<string>());
