@@ -7,6 +7,7 @@ namespace mpg;
 class PatternParser
 {
     public NamedLine initline = new();
+    public Dictionary<string, string> startDefines = new();
     public APlacementWay defaultPlacementWay = new StreamWay();
     public PatternParser() {}
 
@@ -203,6 +204,33 @@ class PatternParser
         }
     }
 
+    public Dictionary<string, string> ParseStartDefines(string input)
+    {
+        var result = new  Dictionary<string, string>();
+        int pos;
+        string keystr;
+        string valuestr;
+        string[] trans = input.Split(';', StringSplitOptions.RemoveEmptyEntries);
+        for (int i = 0; i < trans.Length; i++)
+        {
+            pos = trans[i].IndexOf('=');
+            if (pos == -1)
+                continue;
+            keystr = PatternParser.CropSpaces(trans[i][..pos]);
+            valuestr = PatternParser.CropSpaces(trans[i][(pos+1)..]);
+            this.startDefines.Add(keystr, valuestr);
+        }
+        return result;
+    }
+
+    public string UseStartDefines(string input)
+    {
+        string result = new(input);
+        foreach (var item in this.startDefines)
+            result = result.Replace(item.Key, item.Value);
+        return result;
+    }
+
     public Dictionary<NamedLine, List<NamedLineOption>> ParsePatternDict(string input)
     {
         var result = new Dictionary<NamedLine, List<NamedLineOption>>();
@@ -255,8 +283,11 @@ class PatternParser
                     case "#settings":
                         this.ParseSettings(input[endpos..begpos]);
                         break;
+                    case "#startdefines":
+                        this.ParseStartDefines(input[endpos..begpos]);
+                        break;
                     case "#start":
-                        linedict = this.ParsePatternDict(input[endpos..begpos]);
+                        linedict = this.ParsePatternDict(this.UseStartDefines(input[endpos..begpos]));
                         break;
                     default:
                         throw new ParseException("Unknown section: " + section);
