@@ -41,8 +41,8 @@ class NamedLinesField
             {
                 setpos = rnd.Next(0, avpos.Count);
                 nstr[avpos[setpos]] = '1';
+                usedpos.Add(avpos[setpos]);
                 avpos.RemoveAt(setpos);
-                usedpos.Add(setpos);
                 count--;
             }
             if ((count > 0) && (this.value[number].way.type == WayType.Weak))
